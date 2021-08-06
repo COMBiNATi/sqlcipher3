@@ -11,8 +11,10 @@ Remove-Item sqlcipher.zip
 
 # assume you have vs build tools, otherwise, correct the path
 # https://stackoverflow.com/a/2124759
-pushd "C:\Program Files (x86)\Microsoft Visual Studio\2017\BuildTools\Common7\Tools"
-cmd /c "VsDevCmd.bat&set" |
+# pushd "C:\Program Files (x86)\Microsoft Visual Studio\2017\BuildTools\Common7\Tools"
+pushd "C:\Program Files (x86)\Microsoft Visual Studio\2017\BuildTools\VC\Auxiliary\Build"
+# cmd /c "VsDevCmd.bat&set" |
+cmd /c "vcvars64.bat&set" |
 foreach {
   if ($_ -match "=") {
     $v = $_.split("="); set-item -force -path "ENV:\$($v[0])"  -value "$($v[1])"
