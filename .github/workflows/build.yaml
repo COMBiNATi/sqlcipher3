@@ -20,22 +20,15 @@ jobs:
           # build .whl file deps
           pip install wheel
 
-      - name: Build amalgamation and sqlcipher3 python wheels
+      - name: Configure build for amd64
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: amd64
+
+      - name: Download sqlcipher
         shell: pwsh
         run: |
 
-          # Load proper vs build paths
-          # https://stackoverflow.com/a/2124759
-          $installationPath = vswhere.exe -prerelease -latest -property installationPath
-          pushd "$installationPath\VC\Auxiliary\Build"
-          cmd /c "vcvars64.bat&set" |
-          foreach {
-            if ($_ -match "=") {
-              $v = $_.split("="); set-item -force -path "ENV:\$($v[0])"  -value "$($v[1])"
-            }
-          }
-          popd
-          
           $ProgressPreference = 'SilentlyContinue' # do not slow down Invoke-WebRequest
           Write-Output "Downloading SQLCipher zip"
           Invoke-WebRequest -Uri "https://github.com/sqlcipher/sqlcipher/archive/refs/tags/v4.4.3.zip" -OutFile "sqlcipher.zip"
@@ -44,9 +37,8 @@ jobs:
           Expand-Archive -Force -Path sqlcipher.zip -DestinationPath ./
           Remove-Item sqlcipher.zip
 
-          # assume you have vs build tools, otherwise, correct the path
-          # https://stackoverflow.com/a/2124759
-          Write-Host "`nVisual Studio 2017 Command Prompt variables set." -ForegroundColor Yellow
+      - name: Build sqlcipher amalgamation
+        run: |
 
           mkdir sqlcipher-build
           cd sqlcipher-build
@@ -57,6 +49,8 @@ jobs:
           # copy sqlcipher amalgamation into root directory
           cp ./sqlcipher-build/sqlite3.[ch] .
 
+      - name: Build python wheels
+        run: |
           # build pyd
           python setup.py build_static
 
