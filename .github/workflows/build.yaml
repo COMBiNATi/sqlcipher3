@@ -8,29 +8,23 @@ jobs:
       fail-fast: false
       matrix:
         python-version: [3.7, 3.8, 3.9]
-        # python-version: [3.9]
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
-      - name: install openssl
+      - name: Install OpenSSL and python wheel
         run: |
           choco install openssl --version 1.1.1.1100 --no-progress -y
-          # to build .whl file
+
+          # build .whl file deps
           pip install wheel
 
-      - name: test vs
-        # working-directory: ./build-scripts
+      - name: Build amalgamation and sqlcipher3 python wheels
         shell: pwsh
         run: |
-          # $installationPath = vswhere.exe -prerelease -latest -property installationPath
-          # if ($installationPath -and (test-path "$installationPath\Common7\Tools\vsdevcmd.bat")) {
-          #   & "${env:COMSPEC}" /s /c "`"$installationPath\VC\Auxiliary\Build\vcvars64.bat`" && set" | foreach-object {
-          #     $name, $value = $_ -split '=', 2
-          #     set-content env:\"$name" $valuez
-          #   }
-          # }
+
+          # Load proper vs build paths
           # https://stackoverflow.com/a/2124759
           $installationPath = vswhere.exe -prerelease -latest -property installationPath
           pushd "$installationPath\VC\Auxiliary\Build"
@@ -41,20 +35,13 @@ jobs:
             }
           }
           popd
-
           
-
-
-
-          
-          $ProgressPreference = 'SilentlyContinue'
-
+          $ProgressPreference = 'SilentlyContinue' # do not slow down Invoke-WebRequest
           Write-Output "Downloading SQLCipher zip"
           Invoke-WebRequest -Uri "https://github.com/sqlcipher/sqlcipher/archive/refs/tags/v4.4.3.zip" -OutFile "sqlcipher.zip"
 
           Write-Output "Extracting SQLCipher source code"
           Expand-Archive -Force -Path sqlcipher.zip -DestinationPath ./
-
           Remove-Item sqlcipher.zip
 
           # assume you have vs build tools, otherwise, correct the path
@@ -67,14 +54,13 @@ jobs:
           cd build
           cp ..\Makefile.msc .\
 
-          # it can make some errors, but sqlite3.[ch] are the files of our interest, not dll or exes
           nmake /f Makefile.msc CFLAGS="-DSQLITE_HAS_CODEC" TOP=..\ | Out-Null
-
-          # TODO check if sqlite.[ch] are not empty files - if yes, error
-
+          # nmake will throw some errors, but sqlite3.[ch] amalgamation are
+          # the only files of our interest, not dll or exes, so we can omit that...
 
           cd ../..
 
+          # copy sqlcipher amalgamation into root directory
           cp ./sqlcipher-*/build/sqlite3.[ch] .
 
           # build pyd
@@ -83,42 +69,10 @@ jobs:
           # build whl
           python setup.py bdist_wheel
 
-          # install by: pip install sqlcipher3-0.4.5-cp39-cp39-win_amd64.whl
-      - name: artifact whl
+      - name: Upload Python wheel artifacts
         uses: actions/upload-artifact@v1
         with:
           name: sqlcipher3-whl
           path: ./dist/
 
-
-
-
-
-
-
-          
-
-
-
-
-
-
-
-  #         jobs:
-  # build:
-  #   runs-on: [windows-latest]
-  #   steps:
-  #     - name: RC.exe
-  #       run: |
-  #         function Invoke-VSDevEnvironment {
-  #         $vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
-  #             $installationPath = & $vswhere -prerelease -legacy -latest -property installationPath
-  #             $Command = Join-Path $installationPath "VC\Auxiliary\Build\vcvars64.bat"
-  #           & "${env:COMSPEC}" /s /c "`"$Command`" -no_logo && set" | Foreach-Object {
-  #                 if ($_ -match '^([^=]+)=(.*)') {
-  #                     [System.Environment]::SetEnvironmentVariable($matches[1], $matches[2])
-  #                 }
-  #             }
-  #         }
-  #         Invoke-VSDevEnvironment
-  #         Get-Command rc.exe | Format-Table -AutoSize
+# install using pip, e.g.: pip install sqlcipher3-0.4.5-cp39-cp39-win_amd64.whl
