@@ -9,8 +9,8 @@ Expand-Archive -Force -Path sqlcipher.zip -DestinationPath ./
 
 Remove-Item sqlcipher.zip
 
-
 # assume you have vs build tools, otherwise, correct the path
+# https://stackoverflow.com/a/2124759
 pushd "C:\Program Files (x86)\Microsoft Visual Studio\2017\BuildTools\Common7\Tools"
 cmd /c "VsDevCmd.bat&set" | Out-Null
 popd
@@ -30,7 +30,7 @@ nmake /f Makefile.msc CFLAGS="-DSQLITE_HAS_CODEC" TOP=..\ | Out-Null
 cd ../..
 
 Write-Output "Downloading SQLCipher3 python binding zip"
-Invoke-WebRequest -Uri "https://github.com/coleifer/sqlcipher3/archive/refs/tags/0.4.5.zip" -OutFile "sqlcipher3.zip"
+Invoke-WebRequest -Uri "https://github.com/lstolcman/sqlcipher3/archive/refs/heads/master.zip" -OutFile "sqlcipher3.zip"
 
 Write-Output "Extracting SQLCipher3 python binding source code"
 Expand-Archive -Force -Path sqlcipher3.zip -DestinationPath ./
