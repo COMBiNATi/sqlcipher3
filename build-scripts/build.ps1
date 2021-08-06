@@ -21,7 +21,7 @@ foreach {
 popd
 Write-Host "`nVisual Studio 2017 Command Prompt variables set." -ForegroundColor Yellow
 
-cd sqlcipher-4.4.3
+cd sqlcipher-*
 
 mkdir build
 cd build
@@ -41,8 +41,8 @@ Write-Output "Extracting SQLCipher3 python binding source code"
 Expand-Archive -Force -Path sqlcipher3.zip -DestinationPath ./
 Remove-Item sqlcipher3.zip
 
-cd sqlcipher3-0.4.5
-cp ../sqlcipher-4.4.3/build/sqlite3.[ch] .
+cd sqlcipher3-master
+cp ../sqlcipher-*/build/sqlite3.[ch] .
 
 # to build .whl file
 pip install wheel
