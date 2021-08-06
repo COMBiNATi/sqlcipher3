@@ -1,3 +1,7 @@
+# pre-requirements:
+# openssl "full" 64bit: https://slproweb.com/download/Win64OpenSSL-1_1_1k.exe
+# tcl: https://sourceforge.net/projects/magicsplat/files/magicsplat-tcl/tcl-8.6.11-installer-1.11.2-x64.msi/download
+
 
 $ProgressPreference = 'SilentlyContinue'
 
@@ -40,16 +44,13 @@ Write-Output "Extracting SQLCipher3 python binding source code"
 Expand-Archive -Force -Path sqlcipher3.zip -DestinationPath ./
 Remove-Item sqlcipher3.zip
 
-cd sqlcipher3-master
-cp ../sqlcipher-build/sqlite3.[ch] .
-
 # to build .whl file
+python -m venv venv
+.\venv\scripts\activate
 pip install wheel
 
-# openssl "full" 64bit https://slproweb.com/download/Win64OpenSSL-1_1_1k.exe
-# choco install openssl --version 1.1.1.1100 # == 1.1.1k
-# default path:
-# $env:OPENSSL_DIR="C:\Program Files\OpenSSL-Win64"
+cd sqlcipher3-master
+cp ../sqlcipher-build/sqlite3.[ch] .
 
 # build pyd
 python setup.py build_static
@@ -57,4 +58,13 @@ python setup.py build_static
 # build whl
 python setup.py bdist_wheel
 
-# install by: pip install sqlcipher3-0.4.5-cp39-cp39-win_amd64.whl
+cp .\dist\*whl ..\
+
+cd ..
+
+Remove-Item -Force -Recurse venv
+Remove-Item -Force -Recurse sqlcipher3-master
+Remove-Item -Force -Recurse sqlcipher-4.4.3
+Remove-Item -Force -Recurse sqlcipher-build
+
+# installing result .whl: pip install sqlcipher3-0.4.5-cp39-cp39-win_amd64.whl
