@@ -88,7 +88,7 @@ jobs:
         uses: actions/upload-artifact@v1
         with:
           name: sqlcipher3-whl
-          path: .\sqlcipher3-*\dist\*whl
+          path: ./
 
 
 
