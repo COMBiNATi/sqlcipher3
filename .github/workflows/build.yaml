@@ -10,6 +10,7 @@ jobs:
         # python-version: [3.6, 3.7, 3.8]
         python-version: [3.9]
     steps:
+      - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
@@ -74,9 +75,8 @@ jobs:
           cd ../..
 
 
-
-      - uses: actions/checkout@v2
-      - name: build whl
+      - name: test vs
+        working-directory: ./
         shell: pwsh
         run: |
           # build pyd
@@ -84,13 +84,13 @@ jobs:
 
           # build whl
           python setup.py bdist_wheel
-      - name: upload whl as artifact
+
+          # install by: pip install sqlcipher3-0.4.5-cp39-cp39-win_amd64.whl
+      - name: artifact whl
         uses: actions/upload-artifact@v1
         with:
           name: sqlcipher3-whl
           path: .\build-scripts\sqlcipher3-master\dist\
-
-          # install by: pip install sqlcipher3-0.4.5-cp39-cp39-win_amd64.whl
 
 
 
