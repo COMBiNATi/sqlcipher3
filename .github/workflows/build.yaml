@@ -72,7 +72,10 @@ jobs:
 
           # TODO check if sqlite.[ch] are not empty files - if yes, error
 
+
           cd ../..
+
+          cp ./sqlcipher-*/build/sqlite3.[ch] .
 
           # build pyd
           python setup.py build_static
