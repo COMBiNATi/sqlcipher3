@@ -102,7 +102,7 @@ jobs:
         uses: actions/upload-artifact@v1
         with:
           name: sqlcipher3-whl
-          path: ./
+          path: .\build-scripts\sqlcipher3-master\dist\
 
 
 
