@@ -19,6 +19,7 @@ jobs:
           choco install openssl --version 1.1.1.1100 --no-progress -y
           # to build .whl file
           pip install wheel
+
       - name: test vs
         working-directory: ./build-scripts
         shell: pwsh
@@ -40,7 +41,6 @@ jobs:
             }
           }
           popd
-          Write-Host "`nVisual Studio Command Prompt variables set." -ForegroundColor Yellow
 
           
 
@@ -57,8 +57,9 @@ jobs:
 
           Remove-Item sqlcipher.zip
 
-          
-          
+          # assume you have vs build tools, otherwise, correct the path
+          # https://stackoverflow.com/a/2124759
+          Write-Host "`nVisual Studio 2017 Command Prompt variables set." -ForegroundColor Yellow
 
           cd sqlcipher-*
 
@@ -72,6 +73,7 @@ jobs:
           # TODO check if sqlite.[ch] are not empty files - if yes, error
 
           cd ../..
+
 
 
           # build pyd
