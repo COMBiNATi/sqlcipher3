@@ -51,13 +51,6 @@ jobs:
           mkdir sqlcipher-build
           cd sqlcipher-build
 
-          # mkdir build
-          # cd build
-          # cp ..\Makefile.msc .\
-
-          # nmake /f Makefile.msc CFLAGS="-DSQLITE_HAS_CODEC" TOP=..\ | Out-Null
-          # # nmake will throw some errors, but sqlite3.[ch] amalgamation are
-          # # the only files of our interest, not dll or exes, so we can omit that...
           nmake /f ..\sqlcipher-4.4.3\Makefile.msc sqlite3.c CFLAGS="-DSQLITE_HAS_CODEC" TOP=..\sqlcipher-4.4.3
           cd ..
 
