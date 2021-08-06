@@ -45,7 +45,7 @@ pip install wheel
 # openssl "full" 64bit https://slproweb.com/download/Win64OpenSSL-1_1_1k.exe
 # choco install openssl --version 1.1.1.1100 # == 1.1.1k
 # default path:
-$env:OPENSSL_DIR="C:\Program Files\OpenSSL-Win64"
+# $env:OPENSSL_DIR="C:\Program Files\OpenSSL-Win64"
 
 # build pyd
 python setup.py build_static
