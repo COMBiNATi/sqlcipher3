@@ -13,6 +13,8 @@ jobs:
       - uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
+          architecture: 'x64'
+
       - name: Install OpenSSL and python wheel
         run: |
           choco install openssl --version 1.1.1.1100 --no-progress -y
@@ -44,7 +46,7 @@ jobs:
           nmake /f ..\sqlcipher-4.4.3\Makefile.msc sqlite3.c CFLAGS="-DSQLITE_HAS_CODEC" TOP=..\sqlcipher-4.4.3
           cd ..
 
-          # copy sqlcipher amalgamation into root directory
+          # copy sqlcipher amalgamation files into root directory
           cp ./sqlcipher-build/sqlite3.[ch] .
 
       - name: Build python wheels
