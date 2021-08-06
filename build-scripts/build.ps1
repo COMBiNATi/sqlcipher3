@@ -1,6 +1,7 @@
 # pre-requirements:
 # openssl "full" 64bit: https://slproweb.com/download/Win64OpenSSL-1_1_1k.exe
 # tcl: https://sourceforge.net/projects/magicsplat/files/magicsplat-tcl/tcl-8.6.11-installer-1.11.2-x64.msi/download
+# visual studio build tools or visualstudio c++
 
 
 $ProgressPreference = 'SilentlyContinue'
@@ -33,24 +34,16 @@ cd sqlcipher-build
 # build sqlite amalgamation
 nmake /f ..\sqlcipher-4.4.3\Makefile.msc sqlite3.c CFLAGS="-DSQLITE_HAS_CODEC" TOP=..\sqlcipher-4.4.3
 
-# TODO check if sqlite.[ch] are not empty files - if yes, error
 
-cd ..
+# copy sqlcipher amalgamation files into root directory
+cp .\sqlite3.[ch] ..\..
+cd ..\..
 
-Write-Output "Downloading SQLCipher3 python binding zip"
-Invoke-WebRequest -Uri "https://github.com/lstolcman/sqlcipher3/archive/refs/heads/master.zip" -OutFile "sqlcipher3.zip"
 
-Write-Output "Extracting SQLCipher3 python binding source code"
-Expand-Archive -Force -Path sqlcipher3.zip -DestinationPath ./
-Remove-Item sqlcipher3.zip
-
-# to build .whl file
+# .whl build requirement
 python -m venv venv
 .\venv\scripts\activate
 pip install wheel
-
-cd sqlcipher3-master
-cp ../sqlcipher-build/sqlite3.[ch] .
 
 # build pyd
 python setup.py build_static
@@ -58,13 +51,11 @@ python setup.py build_static
 # build whl
 python setup.py bdist_wheel
 
-cp .\dist\*whl ..\
-
-cd ..
-
-Remove-Item -Force -Recurse venv
-Remove-Item -Force -Recurse sqlcipher3-master
-Remove-Item -Force -Recurse sqlcipher-4.4.3
-Remove-Item -Force -Recurse sqlcipher-build
+# cleanup
+Remove-Item -Force -Recurse .\venv
+Remove-Item -Force -Recurse .\build-scripts\sqlcipher-4.4.3
+Remove-Item -Force -Recurse .\build-scripts\sqlcipher-build
+Remove-Item -Force -Recurse .\sqlcipher
+Remove-Item sqlite3.[ch]
 
 # installing result .whl: pip install sqlcipher3-0.4.5-cp39-cp39-win_amd64.whl
