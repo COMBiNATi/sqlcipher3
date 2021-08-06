@@ -48,20 +48,21 @@ jobs:
           # https://stackoverflow.com/a/2124759
           Write-Host "`nVisual Studio 2017 Command Prompt variables set." -ForegroundColor Yellow
 
-          cd sqlcipher-*
+          mkdir sqlcipher-build
+          cd sqlcipher-build
 
-          mkdir build
-          cd build
-          cp ..\Makefile.msc .\
+          # mkdir build
+          # cd build
+          # cp ..\Makefile.msc .\
 
-          nmake /f Makefile.msc CFLAGS="-DSQLITE_HAS_CODEC" TOP=..\ | Out-Null
-          # nmake will throw some errors, but sqlite3.[ch] amalgamation are
-          # the only files of our interest, not dll or exes, so we can omit that...
-
-          cd ../..
+          # nmake /f Makefile.msc CFLAGS="-DSQLITE_HAS_CODEC" TOP=..\ | Out-Null
+          # # nmake will throw some errors, but sqlite3.[ch] amalgamation are
+          # # the only files of our interest, not dll or exes, so we can omit that...
+          nmake /f ..\sqlcipher-4.4.3\Makefile.msc sqlite3.c CFLAGS="-DSQLITE_HAS_CODEC" TOP=..\sqlcipher-4.4.3
+          cd ..
 
           # copy sqlcipher amalgamation into root directory
-          cp ./sqlcipher-*/build/sqlite3.[ch] .
+          cp ./sqlcipher-build/sqlite3.[ch] .
 
           # build pyd
           python setup.py build_static

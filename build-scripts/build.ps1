@@ -23,18 +23,15 @@ foreach {
 popd
 Write-Host "`nVisual Studio 2017 Command Prompt variables set." -ForegroundColor Yellow
 
-cd sqlcipher-*
+mkdir sqlcipher-build
+cd sqlcipher-build
 
-mkdir build
-cd build
-cp ..\Makefile.msc .\
-
-# it can make some errors, but sqlite3.[ch] are the files of our interest, not dll or exes
-nmake /f Makefile.msc CFLAGS="-DSQLITE_HAS_CODEC" TOP=..\ | Out-Null
+# build sqlite amalgamation
+nmake /f ..\sqlcipher-4.4.3\Makefile.msc sqlite3.c CFLAGS="-DSQLITE_HAS_CODEC" TOP=..\sqlcipher-4.4.3
 
 # TODO check if sqlite.[ch] are not empty files - if yes, error
 
-cd ../..
+cd ..
 
 Write-Output "Downloading SQLCipher3 python binding zip"
 Invoke-WebRequest -Uri "https://github.com/lstolcman/sqlcipher3/archive/refs/heads/master.zip" -OutFile "sqlcipher3.zip"
@@ -44,7 +41,7 @@ Expand-Archive -Force -Path sqlcipher3.zip -DestinationPath ./
 Remove-Item sqlcipher3.zip
 
 cd sqlcipher3-master
-cp ../sqlcipher-*/build/sqlite3.[ch] .
+cp ../sqlcipher-build/sqlite3.[ch] .
 
 # to build .whl file
 pip install wheel
