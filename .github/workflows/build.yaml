@@ -21,7 +21,7 @@ jobs:
           pip install wheel
 
       - name: test vs
-        working-directory: ./build-scripts
+        # working-directory: ./build-scripts
         shell: pwsh
         run: |
           # $installationPath = vswhere.exe -prerelease -latest -property installationPath
@@ -74,11 +74,6 @@ jobs:
 
           cd ../..
 
-
-      - name: test vs
-        working-directory: ./
-        shell: pwsh
-        run: |
           # build pyd
           python setup.py build_static
 
