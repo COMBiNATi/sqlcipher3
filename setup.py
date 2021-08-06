@@ -121,7 +121,7 @@ class AmalgationLibSqliteBuilder(build_ext):
                 openssl_dir = r'C:\Program Files\OpenSSL-Win64'
                 print(f'Setting OpenSSL directory to default: {openssl_dir}')
             else:
-                openssl_dir = os.path.dirname(os.path.dirname(openssl_dir))
+                openssl_dir = os.path.dirname(os.path.dirname(openssl_conf))
 
             if not os.path.isdir(openssl_dir):
                 error_message = 'Fatal error: OpenSSL directory could not be detected!'
