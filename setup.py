@@ -118,14 +118,18 @@ class AmalgationLibSqliteBuilder(build_ext):
             # Try to locate openssl.
             openssl_conf = os.environ.get('OPENSSL_CONF')
             if not openssl_conf:
-                error_message = 'Fatal error: OpenSSL could not be detected!'
-                raise RuntimeError(error_message)
+                openssl_dir = r'C:\Program Files\OpenSSL-Win64'
+                print(f'Setting OpenSSL directory to default: {openssl_dir}')
+            else:
+                openssl_dir = os.path.dirname(os.path.dirname(openssl_dir))
 
-            openssl = os.path.dirname(os.path.dirname(openssl_conf))
-            openssl_lib_path = os.path.join(openssl, "lib")
+            if not os.path.isdir(openssl_dir):
+                error_message = 'Fatal error: OpenSSL directory could not be detected!'
+
+            openssl_lib_path = os.path.join(openssl_dir, "lib")
 
             # Configure the compiler
-            ext.include_dirs.append(os.path.join(openssl, "include"))
+            ext.include_dirs.append(os.path.join(openssl_dir, "include"))
             ext.define_macros.append(("inline", "__inline"))
 
             # Configure the linker
