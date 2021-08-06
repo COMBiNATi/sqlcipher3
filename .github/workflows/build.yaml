@@ -20,7 +20,7 @@ jobs:
           # build .whl file deps
           pip install wheel
 
-      - name: Configure build for amd64
+      - name: Setup nmake
         uses: ilammy/msvc-dev-cmd@v1
         with:
           arch: amd64
