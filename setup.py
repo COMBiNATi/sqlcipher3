@@ -125,7 +125,7 @@ class AmalgationLibSqliteBuilder(build_ext):
             openssl_lib_path = os.path.join(openssl, "lib")
 
             # Configure the compiler
-            ext.include_dirs.append(os.path.join(openssl, "include")))
+            ext.include_dirs.append(os.path.join(openssl, "include"))
             ext.define_macros.append(("inline", "__inline"))
 
             # Configure the linker
